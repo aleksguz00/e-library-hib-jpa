@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>All people</title>
+</head>
+<body>
+
+<div th:each="person : ${people}">
+    <a th:text="${person.getName()} + ', ' + ${person.getAge()}"
+       th:href="@{/people/{id}(id = ${person.getId()})}">User</a>
+</div>
+
+<br>
+<hr>
+
+<form th:method="GET" th:action="@{/people/new}">
+    <input type="submit" value="Create a new person">
+</form>
+
+</body>
+</html>
