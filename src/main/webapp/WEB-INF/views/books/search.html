@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Book search</title>
+</head>
+<body>
+
+<form th:method="GET" th:action="@{/books/search}">
+  <label for="search">Enter book title: </label>
+  <input type="text" id="search" name="search" th:value="${search}">
+
+  <input type="submit" value="Search">
+</form>
+
+<div th:if="${search}" th:each="book : ${resultBooks}">
+  <div>
+    <a th:text="${book.getTitle()} + ', ' + ${book.getAuthor()} + ', ' + ${book.getYear()}"
+       th:href="@{/books/{id}(id = ${book.getId()})}"></a>
+
+    <br>
+
+    <div th:if="${book.getOwner()}">
+      <span>Book has been taken by </span><span th:text="${book.getOwner().getName()}"></span>
+    </div>
+
+    <div th:if="${book.getOwner() == null}">
+      <p>Book is available</p>
+    </div>
+
+    <hr>
+  </div>
+</div>
+
+<form th:method="GET" th:action="@{/books/search}">
+  <input type="hidden" name="search" th:value="${search}">
+  <input type="hidden" name="sort" value="true">
+  <input type="submit" value="Sort">
+</form>
+
+</body>
+</html>

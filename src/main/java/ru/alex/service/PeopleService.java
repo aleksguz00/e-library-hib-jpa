@@ -1,16 +1,17 @@
 package ru.alex.service;
 
 import org.hibernate.Hibernate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.alex.model.Book;
 import ru.alex.model.Person;
 import ru.alex.repository.PeopleRepository;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.OptionalInt;
 
 @Service
 @Transactional
@@ -18,6 +19,7 @@ public class PeopleService {
 
     private final PeopleRepository peopleRepository;
 
+    @Autowired
     public PeopleService(PeopleRepository peopleRepository) {
         this.peopleRepository = peopleRepository;
     }
@@ -60,7 +62,13 @@ public class PeopleService {
 
         if (person.isPresent()) {
             Hibernate.initialize(person.get().getBooks());
-            return person.get().getBooks();
+            List<Book> books = person.get().getBooks();
+
+            for (Book book : books) {
+                checkExpired(book);
+            }
+
+            return books;
         } else {
             return Collections.emptyList();
         }
@@ -69,5 +77,20 @@ public class PeopleService {
     @Transactional(readOnly = true)
     public boolean isOldEmail(Person newPerson, Person oldPerson) {
         return newPerson.getEmail().equals(oldPerson.getEmail());
+    }
+
+    private void checkExpired(Book book) {
+        LocalDateTime takenDate = book.getTakenDate();
+
+        if (takenDate != null) {
+            if (takenDate.plusSeconds(10).isBefore(LocalDateTime.now())) {
+                book.setExpired(true);
+                System.out.println("Expired");
+            } else {
+                System.out.println("Not expired");
+            }
+        } else {
+            System.out.println("NULL");
+        }
     }
 }

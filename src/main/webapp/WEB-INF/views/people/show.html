@@ -14,10 +14,19 @@
     <p>Person hasn't taken any books</p>
 </div>
 
+<style>
+    .custom-link {
+        text-decoration: none; /* Убирает подчёркивание */
+        color: inherit; /* Устанавливает цвет ссылки как цвет родительского элемента */
+    }
+</style>
+
 <div th:if="${!books.isEmpty()}">
     <div th:each="book : ${books}">
-        <a th:text="${book.getTitle()} + ', ' + ${book.getYear()} + ', ' + ${book.getAuthor()}"
-           th:href="@{/books/{id}(id = ${book.getId()})}">VALUE</a>
+        <a class="custom-link"
+           th:text="${book.getTitle()} + ', ' + ${book.getYear()} + ', ' + ${book.getAuthor()}"
+           th:href="@{/books/{id}(id = ${book.getId()})}"
+           th:style="${book.isExpired()} ? 'color: red;' : ''">VALUE</a>
     </div>
 </div>
 

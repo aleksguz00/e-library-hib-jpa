@@ -18,5 +18,12 @@
     <input type="submit" value="Create a new book">
 </form>
 
+<br>
+
+<form th:method="GET" th:action="@{/books}">
+    <input type="hidden" name="sort" value="true">
+    <input type="submit" value="Sort">
+</form>
+
 </body>
 </html>

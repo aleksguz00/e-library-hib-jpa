@@ -36,18 +36,22 @@ public class Book {
     @Column(name = "status")
     private BookStatus status;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "taken_date")
+    private LocalDateTime takenDate;
+
     @Transient
-    private LocalDateTime expirationDate;
+    private boolean isExpired;
 
     public Book() {}
 
-    public Book(String title, String author, int year, Person owner, BookStatus status, LocalDateTime expirationDate) {
+    public Book(String title, String author, int year, Person owner, BookStatus status, LocalDateTime takenDate) {
         this.title = title;
         this.author = author;
         this.year = year;
         this.owner = owner;
         this.status = status;
-        this.expirationDate = expirationDate;
+        this.takenDate = takenDate;
     }
 
     public int getId() {
@@ -98,11 +102,19 @@ public class Book {
         this.status = status;
     }
 
-    public LocalDateTime getExpirationDate() {
-        return expirationDate;
+    public LocalDateTime getTakenDate() {
+        return takenDate;
     }
 
-    public void setExpirationDate(LocalDateTime expirationDate) {
-        this.expirationDate = expirationDate;
+    public void setTakenDate(LocalDateTime takenDate) {
+        this.takenDate = takenDate;
+    }
+
+    public boolean isExpired() {
+        return isExpired;
+    }
+
+    public void setExpired(boolean expired) {
+        isExpired = expired;
     }
 }

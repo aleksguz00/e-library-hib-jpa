@@ -27,8 +27,11 @@ public class BooksController {
     }
 
     @GetMapping
-    public String index(Model model) {
-        model.addAttribute("books", booksService.findAll());
+    public String index(Model model,
+                        @RequestParam(name = "per_page", defaultValue = "10") int perPage,
+                        @RequestParam(name = "page", defaultValue = "0") int page,
+                        @RequestParam(name = "isSorted", defaultValue = "false") boolean isSorted) {
+        model.addAttribute("books", booksService.findAll(perPage, page, isSorted));
 
         return "books/index";
     }
@@ -48,6 +51,18 @@ public class BooksController {
         }
 
         return "books/show";
+    }
+
+    @GetMapping("/search")
+    public String search(Model model,
+                         @RequestParam(name = "search", defaultValue = "") String search,
+                         @RequestParam(name = "sort", defaultValue = "false") boolean isSorted) {
+        if (!search.isEmpty()) {
+            model.addAttribute("search", search);
+            model.addAttribute("resultBooks", booksService.findByTitleContaining(search, isSorted));
+        }
+
+        return "books/search";
     }
 
     @GetMapping("/new")
@@ -75,6 +90,7 @@ public class BooksController {
         return "books/edit";
     }
 
+    // TODO: Forbid to edit book if it is in use
     @PatchMapping("/{id}")
     public String update(@PathVariable("id") int id, @ModelAttribute("book") @Valid Book book,
                          BindingResult bindingResult) {
