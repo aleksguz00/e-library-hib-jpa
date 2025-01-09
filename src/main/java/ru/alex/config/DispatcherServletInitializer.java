@@ -3,6 +3,7 @@ package ru.alex.config;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
@@ -20,7 +21,7 @@ public class DispatcherServletInitializer extends AbstractAnnotationConfigDispat
 
     @Override
     protected String[] getServletMappings() {
-        return new String[] {"/*"};
+        return new String[] {"/"};
     }
 
     @Override
@@ -28,6 +29,10 @@ public class DispatcherServletInitializer extends AbstractAnnotationConfigDispat
         super.onStartup(servletContext);
 
         registerHiddenFieldFilter(servletContext);
+
+        servletContext.addFilter("securityFilter",
+                new DelegatingFilterProxy("springSecurityFilterChain"))
+                .addMappingForUrlPatterns(null, false, "/*");
     }
 
     private void registerHiddenFieldFilter(ServletContext servletContext) {

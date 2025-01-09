@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@Transactional
 public class PeopleService {
 
     private final PeopleRepository peopleRepository;
@@ -39,10 +38,12 @@ public class PeopleService {
         return peopleRepository.findByEmail(email);
     }
 
+    @Transactional
     public void save(Person person) {
         peopleRepository.save(person);
     }
 
+    @Transactional
     public void update(int id, Person newPerson) {
         Optional<Person> person = peopleRepository.findById(id);
 
@@ -52,6 +53,7 @@ public class PeopleService {
         }
     }
 
+    @Transactional
     public void delete(int id) {
         peopleRepository.deleteById(id);
     }
