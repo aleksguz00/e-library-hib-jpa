@@ -1,5 +1,8 @@
 package ru.alex.config;
 
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,10 +12,15 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import ru.alex.service.PeopleService;
 import ru.alex.service.PersonDetailsService;
+
+import java.io.IOException;
 
 @Configuration
 @EnableWebSecurity
@@ -20,10 +28,12 @@ import ru.alex.service.PersonDetailsService;
 public class SecurityConfig {
 
     private final PersonDetailsService personDetailsService;
+    private final PeopleService peopleService;
 
     @Autowired
-    public SecurityConfig(PersonDetailsService personDetailsService) {
+    public SecurityConfig(PersonDetailsService personDetailsService, PeopleService peopleService) {
         this.personDetailsService = personDetailsService;
+        this.peopleService = peopleService;
     }
 
     @Bean
@@ -53,11 +63,21 @@ public class SecurityConfig {
                     .anyRequest().hasAnyRole("USER", "LIBRARIAN","ADMIN"))
                 .formLogin(form -> form.loginPage("/auth/login")
                 .loginProcessingUrl("/auth/login")
-                .defaultSuccessUrl("/books", true)
+                .successHandler(authenticationSuccessHandler())
                 .failureUrl("/auth/login?error"))
                 .logout(logout -> logout.logoutUrl("/logout").logoutSuccessUrl("/auth/login"));
 
         return http.build();
+    }
+
+    @Bean
+    public AuthenticationSuccessHandler authenticationSuccessHandler() {
+        return (request, response, authentication) -> {
+            String email = authentication.getName();
+            int id = peopleService.findByEmail(email).get().getId();
+
+            response.sendRedirect("/people/" + id);
+        };
     }
 
     @Bean
