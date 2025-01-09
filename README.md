@@ -6,7 +6,7 @@ CRUD электронная библиотека на Spring MVC, Hibernate, JPA
 
 1. Клонировать репозиторий:
    ```bash
-   git clone https://github.com/aleksguz00/e-library
+   git clone https://github.com/aleksguz00/e-library-hib-jpa
 
 2. Перейти в директорию проекта:
    ```bash
